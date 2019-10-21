@@ -2,9 +2,12 @@ const express = require('express');
 const { check, validationResult } = require('express-validator/check');
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const config = require('config')
 
 const router = express.Router();
 const User = require('../../models/Users');
+
 // @rote    Post api/users
 // @desc    Register user
 // @access  Public
@@ -25,8 +28,9 @@ router.post("/", [
         try {
             // check for user exist
             let user = await User.findOne({ email });
+            console.log("user => ", user);
             if (user) {
-                res.status(400).json({
+                return res.status(400).json({
                     errors: [{ msg: "User already exists" }]
                 });
             }
@@ -47,8 +51,21 @@ router.post("/", [
             const salt = await bcrypt.genSalt(10);
             user.password = await bcrypt.hash(password, salt);
             await user.save();
-
-            res.send('User Route');
+            const payload = {
+                user: {
+                    id: user.id
+                }
+            }
+            jwt.sign(
+                payload,
+                config.get('jwtSecret'),
+                { expiresIn: 360000 },
+                (error, token) => {
+                    if (error) throw error;
+                    res.status(200).json({ token });
+                }
+            );
+            // res.send('User Route');
         } catch (error) {
             console.error(error.message)
             return res.status(500).send("Something went wrong");
