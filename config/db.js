@@ -7,7 +7,9 @@ const connectDB = async () => {
     try {
         await mongooes.connect(db, {
             useNewUrlParser: true,
-            useUnifiedTopology: true
+            useUnifiedTopology: true,
+            useCreateIndex: true,
+            useFindAndModify: false,
         })
         console.log("Mongo Conected")
     } catch (error) {
