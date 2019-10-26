@@ -3,7 +3,7 @@ const auth = require('../../middleware/auth');
 const router = express.Router();
 const Profile = require('../../models/Profile');
 const User = require('../../models/Users');
-const { check, validationResult } = require('express-validator/check');
+const { check, validationResult } = require('express-validator');
 
 // @rote    GET api/profile/me
 // @desc    Get Current users profile
