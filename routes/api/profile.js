@@ -61,7 +61,8 @@ router.post("/", [auth, [
     if (status) profileFields.status = status;
     if (githubusername) profileFields.githubusername = githubusername;
     if (skills) {
-        profileFields.skills = skills.split(',').map(skill => skill.trim());
+        profileFields.skills = (typeof skills === 'string') ?
+            skills.split(',').map(skill => skill.trim()) : skills;
     }
     // build social object.
     profileFields.social = {};
@@ -74,7 +75,7 @@ router.post("/", [auth, [
         let profile = await Profile.findOne({ user: req.user.id });
         if (profile) {
             // update
-            profile = await Profile.finOneAndUpdate({ user: req.user.id }, { $set: profileFields }, { new: true });
+            profile = await Profile.findOneAndUpdate({ user: req.user.id }, { $set: profileFields }, { new: true });
             res.json(profile);
         } else {
             profile = new Profile(profileFields);
